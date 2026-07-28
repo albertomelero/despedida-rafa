@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Maqueta App</title>
+  <style>
+    body { font-family: system-ui, Arial; margin:0; background:#f4f6f8; display:flex; justify-content:center; padding:40px; }
+    .screen { width:360px; height:640px; background:white; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.1); padding:20px; display:flex; flex-direction:column; gap:12px; }
+    .nav { display:flex; gap:8px; }
+    .btn { padding:8px 12px; background:#0b6cff; color:#fff; border-radius:8px; text-align:center; cursor:pointer; }
+    .page { display:none; flex:1; }
+    .page.active { display:block; }
+    .link { color:#0b6cff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="nav"><div class="btn" data-target="home">Home</div><div class="btn" data-target="search">Buscar</div><div class="btn" data-target="profile">Perfil</div></div>
+    <div id="home" class="page active">
+      <h2>Pantalla Home</h2>
+      <p>Una maqueta simple de la pantalla principal.</p>
+      <p class="link" data-target="profile">Ir a Perfil →</p>
+    </div>
+    <div id="search" class="page">
+      <h2>Pantalla Buscar</h2>
+      <p>Resultados y filtros aquí.</p>
+    </div>
+    <div id="profile" class="page">
+      <h2>Pantalla Perfil</h2>
+      <p>Información del usuario.</p>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-target]').forEach(el=>{
+      el.addEventListener('click', () => {
+        const t = el.getAttribute('data-target');
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById(t).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
