@@ -63,10 +63,10 @@
     .review-text{font-size:14px;color:#374151}
 
     /* nav bottom */
-    .bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;pointer-events:none}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;pointer-events:auto}
     .nav-inner{width:100%;max-width:100vw;padding:6px 14px;background:transparent;display:flex;justify-content:center}
     .nav-bar{background:#fff;border-radius:40px;box-shadow:0 8px 24px rgba(2,6,23,0.08);width:100%;max-width:420px;display:flex;justify-content:space-around;padding:10px 16px;align-items:center;pointer-events:auto}
-    .nav-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#6b7280}
+    .nav-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#6b7280;cursor:pointer}
     .nav-item .icon{width:28px;height:28px;border-radius:8px;background:transparent;border:0}
     .nav-item.active{color:var(--accent);}
 
@@ -151,7 +151,7 @@
                     <div style="color:#f59e0b;margin-top:6px">★★★★★☆☆☆☆☆</div>
                   </div>
                 </div>
-                <div class="review-text" style="margin-top:8px;background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #eef2ff">el hijo puta me trajo la pizza por la mitad y tardó 1h en llegar porque decía que se le rompió el coche</div>
+                <div class="review-text" style="margin-top:8px;background:#fff;padding:6px 8px;border-radius:8px;border:1px solid #eef2ff">el hijo puta me trajo la pizza por la mitad y tardó 1h [...]</div>
               </div>
             </div>
           </div>
@@ -164,14 +164,80 @@
   <!-- barra inferior -->
   <div class="bottom-nav" aria-hidden="true">
     <div class="nav-inner">
-      <div class="nav-bar">
-        <div class="nav-item"><div class="icon">🏠</div><div>Inicio</div></div>
-        <div class="nav-item"><div class="icon">💸</div><div>Ganancias</div></div>
-        <div class="nav-item active"><div class="icon">👤</div><div>Perfil</div></div>
-        <div class="nav-item"><div class="icon">❓</div><div>Ayuda</div></div>
+      <div class="nav-bar" role="navigation" aria-label="Navegación">
+        <div class="nav-item" id="nav-home" role="button" tabindex="0"><div class="icon">🏠</div><div>Inicio</div></div>
+        <div class="nav-item" id="nav-earnings" role="button" tabindex="0"><div class="icon">💸</div><div>Ganancias</div></div>
+        <div class="nav-item active" id="nav-profile" role="button" tabindex="0"><div class="icon">👤</div><div>Perfil</div></div>
+        <div class="nav-item" id="nav-help" role="button" tabindex="0"><div class="icon">❓</div><div>Ayuda</div></div>
       </div>
     </div>
   </div>
 
+  <script>
+    (function(){
+      // Helper: compute base href so media paths work in new windows
+      function baseHref(){
+        var href = location.href;
+        return href.substring(0, href.lastIndexOf('/')+1);
+      }
+
+      function openWindowWith(html){
+        var w = window.open('', '_blank', 'noopener');
+        if(!w) return alert('No se pudo abrir la ventana. Comprueba el bloqueador de ventanas emergentes.');
+        w.document.open();
+        w.document.write(html);
+        w.document.close();
+      }
+
+      // Common head (styles + base) to include in new windows
+      var styleEl = document.querySelector('style');
+      var commonStyles = styleEl ? styleEl.innerHTML : '';
+      function makeDoc(title, bodyHtml, bgIsPrimary){
+        var base = baseHref();
+        return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>'+title+'</title>'+
+               '<base href="'+base+'">'+
+               '<style> :root{--bg:#f4f6f8;--primary:#f6b81b;--accent:#0b6cff;--text:#111} html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif; } body{display:flex;align-items:center;justify-content:center; text-align:center; background:'+(bgIsPrimary? 'var(--primary)':'var(--bg)')+'; color:var(--text); } .logo{width:160px;height:160px;object-fit:contain;border-radius:12px} .message{font-size:20px;font-weight:700;margin-top:18px;max-width:720px} .placeholder{font-size:18px;color:#374151}</style>'+
+               '</head><body>'+bodyHtml+'</body></html>';
+      }
+
+      function openHome(){
+        var body = '<div><img src="media/logo.png" alt="Logo" class="logo" onerror="this.style.display=\\'none\\'">\n' +
+                   '<div class="message">Bienvenido a tu despedida</div></div>';
+        openWindowWith(makeDoc('Inicio - Despedida', body, true));
+      }
+
+      function openHelp(){
+        var body = '<div><img src="media/logo.png" alt="Logo" class="logo" onerror="this.style.display=\\'none\\'">\n' +
+                   '<div class="message">Déjate de ayudas salao, que te has criado en la dureza. Y perdón por lo de salao.</div></div>';
+        openWindowWith(makeDoc('Ayuda - Despedida', body, true));
+      }
+
+      function openEarnings(){
+        var body = '<div><div class="placeholder">Placeholder - Ganancias</div></div>';
+        openWindowWith(makeDoc('Ganancias - Despedida', body, false));
+      }
+
+      function openProfile(){
+        // replicate current .screen content with existing styles
+        var screen = document.querySelector('.screen');
+        var content = screen ? screen.outerHTML : '<div>Perfil</div>';
+        // Use the current styles but allow scrolling in new window
+        var base = baseHref();
+        var html = '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Perfil</title><base href="'+base+'"><style>'+commonStyles.replace('html,body{height:100%;overflow:hidden}','html,body{height:100%}')+'</style></head><body>'+content+'</body></html>';
+        openWindowWith(html);
+      }
+
+      // Bind events
+      document.getElementById('nav-home').addEventListener('click', openHome);
+      document.getElementById('nav-help').addEventListener('click', openHelp);
+      document.getElementById('nav-earnings').addEventListener('click', openEarnings);
+      document.getElementById('nav-profile').addEventListener('click', openProfile);
+
+      // keyboard support (Enter) for accessibility
+      document.querySelectorAll('.nav-item').forEach(function(el){
+        el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+      });
+    })();
+  </script>
 </body>
 </html>
