@@ -20,10 +20,14 @@
     .head{background:var(--primary);height:28vh;min-height:120px;position:relative}
     .head::after{content:'';position:absolute;left:0;right:0;bottom:-48px;height:96px;background:#fff;border-top-left-radius:60% 48px;border-top-right-radius:60% 48px}
 
+    /* logo en la cabecera (siempre visible) */
+    .app-logo{position:absolute;left:14px;top:14px;width:44px;height:44px;border-radius:10px;object-fit:contain;background:transparent}
+
     /* avatar placeholder centrado, encima del nombre */
     .avatar-wrap{position:relative;margin-top:-60px;display:flex;justify-content:center}
     .avatar{width:110px;height:110px;border-radius:999px;border:6px solid #fff;background:linear-gradient(180deg,#eee,#ddd);display:flex;align-items:center;justify-content:center;overflow:hidden}
     .avatar svg{width:50%;height:50%;color:#9ca3af}
+    .avatar-img{width:100%;height:100%;object-fit:cover;display:block;border-radius:999px}
 
     .content{padding:8px 20px 80px;flex:1;overflow:auto}
     .name-row{text-align:center;margin-top:8px}
@@ -71,12 +75,16 @@
 <body>
   <div class="frame">
     <div class="screen" role="application" aria-label="Perfil">
-      <div class="head" aria-hidden="true"></div>
+      <div class="head" aria-hidden="true">
+        <!-- logo de la aplicación (usa media/logo.png en el repo) -->
+        <img src="media/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
+      </div>
 
       <!-- avatar placeholder centrado encima del nombre -->
       <div class="avatar-wrap">
         <div class="avatar" aria-hidden="true">
-          <!-- placeholder icon; más tarde puedes reemplazar por <img src="..."> -->
+          <!-- Si existe, cargamos la imagen de media/avatar.jpg; si no, mostramos el placeholder SVG -->
+          <img src="media/avatar.jpg" alt="Avatar" class="avatar-img" onerror="this.style.display='none'">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="#d1d5db"/>
             <path d="M3 21c0-3.866 3.582-7 9-7s9 3.134 9 7v1H3v-1z" fill="#e5e7eb"/>
