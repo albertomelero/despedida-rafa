@@ -3,39 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Perfil - Maqueta</title>
+  <title>App - Despedida</title>
   <style>
     :root{--bg:#f4f6f8;--primary:#f6b81b;--accent:#0b6cff;--text:#111}
     *{box-sizing:border-box}
     html,body{height:100%;overflow:hidden}
     body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
-    /* Usamos toda la pantalla, sin márgenes alrededor */
-    .frame{width:100vw;height:100vh;margin:0;padding:0;display:flex;align-items:stretch}
+    /* Usamos toda la pantalla */
+    .frame{width:100vw;height:100vh;margin:0;padding:0;display:flex;align-items:stretch;position:relative}
 
-    /* tarjeta ocupa toda la pantalla (diseño tipo app) */
-    .screen{flex:1;background:#fff;border-radius:0;overflow:hidden;display:flex;flex-direction:column}
+    /* PÁGINAS (Single Page) */
+    .screen-page{width:100%;height:100%;display:none;flex-direction:column;background:#fff;overflow:hidden}
+    .screen-page.active{display:flex}
 
-    /* cabecera amarilla reducida y centrada (solo logo) */
-    .head{background:var(--primary);height:18vh;min-height:72px;position:relative;display:flex;align-items:center;justify-content:center}
-    /* curva inferior pequeña para separación */
+    /* PÁGINA INICIO (Con gradiente a blanco en la parte inferior) */
+    .page-home{
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary) 70%, #ffffff 100%);
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:20px;
+    }
+    .page-home .logo-home{width:160px;height:160px;object-fit:contain;border-radius:16px;margin-bottom:24px}
+    .page-home h1{font-size:28px;font-weight:800;color:var(--text);margin:0}
+
+    /* CABECERA Y ESTILOS DE PERFIL */
+    .head{background:var(--primary);height:18vh;min-height:72px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .head::after{content:'';position:absolute;left:0;right:0;bottom:-20px;height:40px;background:#fff;border-top-left-radius:60% 24px;border-top-right-radius:60% 24px}
-
-    /* logo centrado y más grande */
     .app-logo{width:88px;height:88px;border-radius:12px;object-fit:contain;background:transparent}
 
-    /* avatar placeholder centrado, encima del nombre */
-    .avatar-wrap{position:relative;margin-top:-48px;display:flex;justify-content:center}
+    .avatar-wrap{position:relative;margin-top:-48px;display:flex;justify-content:center;flex-shrink:0}
     .avatar{width:120px;height:120px;border-radius:999px;border:6px solid #fff;background:linear-gradient(180deg,#eee,#ddd);display:flex;align-items:center;justify-content:center;overflow:hidden}
     .avatar svg{width:50%;height:50%;color:#9ca3af}
-    /* ligero zoom por defecto, el usuario puede ajustar más tarde */
     .avatar-img{width:110%;height:110%;object-fit:cover;display:block;border-radius:999px;transform:translate(-5%,-5%)}
 
-    .content{padding:8px 20px 100px;flex:1;overflow:hidden}
+    .content{padding:8px 20px 100px;flex:1;overflow-y:auto}
     .name-row{text-align:center;margin-top:8px}
     h1{margin:6px 0 0;font-size:20px;font-weight:700}
 
-    /* rating row */
     .rating-row{display:flex;align-items:center;gap:12px;padding:12px;margin-top:8px}
     .rating-box{flex:1;border-radius:12px;border:1px solid #eee;padding:8px;display:flex;flex-direction:column}
     .rating-top{display:flex;align-items:center;gap:8px}
@@ -47,45 +53,139 @@
     .score .num{font-size:20px;font-weight:700;color:#b45309}
     .score .label{font-size:12px;color:#6b7280}
 
-    /* rows */
     .row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0}
     .icon{width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;border:1px solid #ffedd5}
     .row .text{flex:1}
     .row .right{color:#6b7280;font-size:14px}
 
-    /* reseñas */
     .section{padding:12px 16px}
     .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .reviews-list .card{background:#fff;border-radius:12px;padding:12px;border:1px solid #eef2ff}
+    .reviews-list .card{background:#fff;border-radius:12px;padding:12px;border:1px solid #eef2ff;margin-bottom:12px}
     .review-meta{display:flex;gap:8px;align-items:center;margin-bottom:6px}
     .review-avatar{width:36px;height:36px;border-radius:50%;background:#e5e7eb}
     .review-name{font-weight:600;font-size:14px}
     .review-text{font-size:14px;color:#374151}
 
-    /* nav bottom */
-    .bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;pointer-events:auto}
+    /* PÁGINA PEDIDOS */
+    .orders-header{background:var(--primary);padding:24px 20px;display:flex;align-items:center;justify-content:space-between}
+    .orders-header h2{margin:0;font-size:22px;font-weight:800;color:var(--text)}
+    .order-card{background:#fff;border:1px solid #eef2ff;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,0.03)}
+    .order-status{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:12px}
+    .status-active{background:#fef3c7;color:#b45309}
+    .status-completed{background:#d1fae5;color:#047857}
+    .order-info{display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px}
+    .order-price{font-weight:700;color:var(--text)}
+
+    /* PÁGINA AYUDA (PLACEHOLDER) */
+    .page-help{align-items:center;justify-content:center;padding:20px;text-align:center;color:#6b7280}
+
+    /* BARRA NAVEGACIÓN INFERIOR */
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;pointer-events:auto;z-index:100}
     .nav-inner{width:100%;max-width:100vw;padding:6px 14px;background:transparent;display:flex;justify-content:center}
     .nav-bar{background:#fff;border-radius:40px;box-shadow:0 8px 24px rgba(2,6,23,0.08);width:100%;max-width:420px;display:flex;justify-content:space-around;padding:10px 16px;align-items:center;pointer-events:auto}
-    .nav-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#6b7280;cursor:pointer}
-    .nav-item .icon{width:28px;height:28px;border-radius:8px;background:transparent;border:0}
-    .nav-item.active{color:var(--accent);}
+    .nav-item{display:flex;flex-direction:column;align-items:center;font-size:12px;color:#6b7280;cursor:pointer;user-select:none}
+    .nav-item .icon{width:28px;height:28px;border-radius:8px;background:transparent;border:0;display:flex;align-items:center;justify-content:center}
+    .nav-item.active{color:var(--accent)}
 
-    /* responsive touches */
     @media (max-width:420px){.frame{height:100vh}} 
   </style>
 </head>
 <body>
   <div class="frame">
-    <div class="screen" role="application" aria-label="Perfil">
+    
+    <!-- 1. PÁGINA INICIO (ACTIVA POR DEFECTO) -->
+    <div class="screen-page page-home active" id="page-home" role="application" aria-label="Inicio">
+      <img src="media/logo.png" alt="Logo" class="logo-home" onerror="this.style.display='none'">
+      <h1>Bienvenido Rafael</h1>
+    </div>
+
+    <!-- 2. PÁGINA PEDIDOS -->
+    <div class="screen-page" id="page-orders" role="application" aria-label="Pedidos">
+      <div class="orders-header">
+        <h2>Pedidos</h2>
+        
+      </div>
+      <div class="content">
+
+
+     <!-- Pedido Completado -->
+	 <div class="order-card">
+          <span class="order-status status-active">Pendiente 🛵</span>
+          <div class="order-info">
+            <span style="font-weight:700">Pedido #4812</span>
+            <span class="order-price">22,00 €</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280;margin-bottom:12px">Ve a un restaurante y simula que tienes que recoger un pedido</div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#374151">
+            <span>Cliente: <strong>?????</strong></span>
+            <span style="color:#6b7280">Hace 3 horas</span>
+          </div>
+        </div>
+	 
+		<div class="order-card">
+          <span class="order-status status-active">Pendiente 🛵</span>
+          <div class="order-info">
+            <span style="font-weight:700">Pedido #4812</span>
+            <span class="order-price">22,00 €</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280;margin-bottom:12px">Finge una llamada incómoda con tu jefe cerca de una mesa</div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#374151">
+            <span>Cliente: <strong>?????</strong></span>
+            <span style="color:#6b7280">Hace 3 horas</span>
+          </div>
+        </div>
+	 
+        <div class="order-card">
+          <span class="order-status status-active">Pendiente 🛵</span>
+          <div class="order-info">
+            <span style="font-weight:700">Pedido #4821</span>
+            <span class="order-price">22,00 €</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280;margin-bottom:12px">Paseate con la motillo por una plaza concurrida</div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#374151">
+            <span>Cliente: <strong>Luis Electricista</strong></span>
+            <span style="color:#6b7280">Hace 4 horas</span>
+          </div>
+        </div>
+		
+		        <!-- Pedido Activo -->
+        <div class="order-card">
+          <span class="order-status status-completed">Entregado ✓</span>
+          <div class="order-info">
+            <span style="font-weight:700">Pedido #4829</span>
+            <span class="order-price">39,99 €</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280;margin-bottom:12px">5x barro patatas</div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#374151">
+            <span>Cliente: <strong>Xesu Romero</strong></span>
+            <span style="color:#6b7280">Hace 5 horas</span>
+          </div>
+        </div>
+		
+        <!-- Pedido Completado -->
+        <div class="order-card">
+          <span class="order-status status-completed">Entregado ✓</span>
+          <div class="order-info">
+            <span style="font-weight:700">Pedido #4831</span>
+            <span class="order-price">30,00 €</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280;margin-bottom:12px">Ponte el disfraz completo antes de salir de casa</div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#374151">
+            <span>Cliente: <strong>Juan Trescanas</strong></span>
+            <span style="color:#6b7280">Hace 7 horas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PÁGINA PERFIL -->
+    <div class="screen-page" id="page-profile" role="application" aria-label="Perfil">
       <div class="head" aria-hidden="true">
-        <!-- logo de la aplicación (usa media/logo.png en el repo) -->
         <img src="media/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'">
       </div>
 
-      <!-- avatar placeholder centrado encima del nombre -->
       <div class="avatar-wrap">
         <div class="avatar" aria-hidden="true">
-          <!-- Si existe, cargamos la imagen de media/avatar.jpg; si no, mostramos el placeholder SVG -->
           <img src="media/avatar.jpg" alt="Avatar" class="avatar-img" onerror="this.style.display='none'">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="#d1d5db"/>
@@ -106,7 +206,6 @@
             </div>
             <div class="rating-top">
               <div class="stars" aria-hidden="true">
-                <!-- 1 filled star, 4 empty -->
                 <svg class="star filled" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.4 9.75l-5.7 5.557L18.8 24 12 20.012 5.2 24l1.1-8.693L.6 9.75l7.732-1.732z"/></svg>
                 <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.4 9.75l-5.7 5.557L18.8 24 12 20.012 5.2 24l1.1-8.693L.6 9.75l7.732-1.732z"/></svg>
                 <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.4 9.75l-5.7 5.557L18.8 24 12 20.012 5.2 24l1.1-8.693L.6 9.75l7.732-1.732z"/></svg>
@@ -124,12 +223,12 @@
 
         <div style="padding:6px 12px">
           <div class="row">
-            <div class="icon" style="background:linear-gradient(180deg,#fff0db,#fff);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h18v13a1 1 0 0 1-1 1H"></svg></div>
+           
             <div class="text">Pedidos completados: <strong>15</strong></div>
             <div class="right">›</div>
           </div>
           <div class="row">
-            <div class="icon" style="background:linear-gradient(180deg,#fff0db,#fff);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 11h18v6a1 1 0 0 1-1 1H"></svg></div>
+         
             <div class="text">Vehículo registrado: <strong>Daewoo</strong></div>
             <div class="right">›</div>
           </div>
@@ -156,7 +255,7 @@
             </div>
           </div>
 		  
-		   <div class="reviews-list">
+          <div class="reviews-list">
             <div class="card" style="display:flex;gap:10px">
               <div style="flex-shrink:0"><div class="review-avatar"></div></div>
               <div style="flex:1">
@@ -174,15 +273,24 @@
 
       </div>
     </div>
+
+    <!-- 4. PÁGINA AYUDA (PLACEHOLDER) -->
+    <div class="screen-page page-help" id="page-help" role="application" aria-label="Ayuda">
+      <div style="font-size:48px;margin-bottom:12px">❓</div>
+      <h2 style="margin:0 0 8px;color:var(--text)">Centro de Ayuda</h2>
+      <p style="margin:0;font-size:14px">Déjate de ayuda, que pa algo te has criado en la dureza, salao.</p>
+    </div>
+
   </div>
 
-  <!-- barra inferior -->
-  <div class="bottom-nav" aria-hidden="true">
+  <!-- Barra de navegación fija -->
+  <div class="bottom-nav">
     <div class="nav-inner">
       <div class="nav-bar" role="navigation" aria-label="Navegación">
-        <div class="nav-item" id="nav-home" role="button" tabindex="0"><div class="icon">🏠</div><div>Inicio</div></div>
-        <div class="nav-item" id="nav-earnings" role="button" tabindex="0"><div class="icon">💸</div><div>P</div></div>
-        <div class="nav-item active" id="nav-profile" role="button" tabindex="0"><div class="icon">👤</div><div>Perfil</div></div>
+        <!-- Inicio marcado como 'active' por defecto -->
+        <div class="nav-item active" id="nav-home" role="button" tabindex="0"><div class="icon">🏠</div><div>Inicio</div></div>
+        <div class="nav-item" id="nav-orders" role="button" tabindex="0"><div class="icon">💸</div><div>Pedidos</div></div>
+        <div class="nav-item" id="nav-profile" role="button" tabindex="0"><div class="icon">👤</div><div>Perfil</div></div>
         <div class="nav-item" id="nav-help" role="button" tabindex="0"><div class="icon">❓</div><div>Ayuda</div></div>
       </div>
     </div>
@@ -190,67 +298,41 @@
 
   <script>
     (function(){
-      // Helper: compute base href so media paths work in new windows
-      function baseHref(){
-        var href = location.href;
-        return href.substring(0, href.lastIndexOf('/')+1);
+      var routes = {
+        'nav-home': 'page-home',
+        'nav-orders': 'page-orders',
+        'nav-profile': 'page-profile',
+        'nav-help': 'page-help'
+      };
+
+      function navigateTo(navId) {
+        document.querySelectorAll('.nav-item').forEach(function(item){
+          item.classList.remove('active');
+        });
+        document.querySelectorAll('.screen-page').forEach(function(page){
+          page.classList.remove('active');
+        });
+
+        document.getElementById(navId).classList.add('active');
+        var targetPageId = routes[navId];
+        if(targetPageId){
+          document.getElementById(targetPageId).classList.add('active');
+        }
       }
 
-      function openWindowWith(html){
-        var w = window.open('', '_blank', 'noopener');
-        if(!w) return alert('No se pudo abrir la ventana. Comprueba el bloqueador de ventanas emergentes.');
-        w.document.open();
-        w.document.write(html);
-        w.document.close();
-      }
-
-      // Common head (styles + base) to include in new windows
-      var styleEl = document.querySelector('style');
-      var commonStyles = styleEl ? styleEl.innerHTML : '';
-      function makeDoc(title, bodyHtml, bgIsPrimary){
-        var base = baseHref();
-        return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>'+title+'</title>'+
-               '<base href="'+base+'">'+
-               '<style> :root{--bg:#f4f6f8;--primary:#f6b81b;--accent:#0b6cff;--text:#111} html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif; } body{display:flex;align-items:center;justify-content:center; text-align:center; background:'+(bgIsPrimary? 'var(--primary)':'var(--bg)')+'; color:var(--text); } .logo{width:160px;height:160px;object-fit:contain;border-radius:12px} .message{font-size:20px;font-weight:700;margin-top:18px;max-width:720px} .placeholder{font-size:18px;color:#374151}</style>'+
-               '</head><body>'+bodyHtml+'</body></html>';
-      }
-
-      function openHome(){
-        var body = '<div><img src="media/logo.png" alt="Logo" class="logo" onerror="this.style.display=\\'none\\'">\n' +
-                   '<div class="message">Bienvenido a tu despedida</div></div>';
-        openWindowWith(makeDoc('Inicio - Despedida', body, true));
-      }
-
-      function openHelp(){
-        var body = '<div><img src="media/logo.png" alt="Logo" class="logo" onerror="this.style.display=\\'none\\'">\n' +
-                   '<div class="message">Déjate de ayudas salao, que te has criado en la dureza. Y perdón por lo de salao.</div></div>';
-        openWindowWith(makeDoc('Ayuda - Despedida', body, true));
-      }
-
-      function openEarnings(){
-        var body = '<div><div class="placeholder">Placeholder - Ganancias</div></div>';
-        openWindowWith(makeDoc('Ganancias - Despedida', body, false));
-      }
-
-      function openProfile(){
-        // replicate current .screen content with existing styles
-        var screen = document.querySelector('.screen');
-        var content = screen ? screen.outerHTML : '<div>Perfil</div>';
-        // Use the current styles but allow scrolling in new window
-        var base = baseHref();
-        var html = '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Perfil</title><base href="'+base+'"><style>'+commonStyles.replace('html,body{height:100%;overflow:hidden}','html,body{height:100%}')+'</style></head><body>'+content+'</body></html>';
-        openWindowWith(html);
-      }
-
-      // Bind events
-      document.getElementById('nav-home').addEventListener('click', openHome);
-      document.getElementById('nav-help').addEventListener('click', openHelp);
-      document.getElementById('nav-earnings').addEventListener('click', openEarnings);
-      document.getElementById('nav-profile').addEventListener('click', openProfile);
-
-      // keyboard support (Enter) for accessibility
-      document.querySelectorAll('.nav-item').forEach(function(el){
-        el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); } });
+      Object.keys(routes).forEach(function(navId){
+        var el = document.getElementById(navId);
+        if(el){
+          el.addEventListener('click', function(){
+            navigateTo(navId);
+          });
+          el.addEventListener('keydown', function(e){
+            if(e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigateTo(navId);
+            }
+          });
+        }
       });
     })();
   </script>
